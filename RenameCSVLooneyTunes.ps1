@@ -1,4 +1,4 @@
-﻿$nid = @()
+$nid = @()
 $epid = @()
 
 Import-Csv Z:\Serverfolders\Database\LooneyTunes.csv -Delimiter "," | ForEach-Object {
@@ -21,5 +21,9 @@ ls *`).mkv | Select-Object Name,FullName | ForEach-Object {
         else {
         Copy-Item -Path $oldname -Destination $newname
         }
-    }
+        }
+        else {
+        Write-host "NOT FOUND:" $_.Name
+        }
+    
 }
