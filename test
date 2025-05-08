@@ -19,13 +19,13 @@ else
 fi
 
 # --- Message Construction ---
-MESSAGE="**Placentia Heartbeat**\n
-    Uptime: \`$UPTIME\`\n
-    IP: \`$PUBLIC_IP\`\n
-    Ping to $PING_TARGET: $PING_STATUS"
+MESSAGE="System Heartbeat\nUptime: \`$UPTIME\`\nIP: \`$PUBLIC_IP\`\nPing to $PING_TARGET: $PING_STATUS"
+
+# --- Create JSON payload using jq ---
+JSON_PAYLOAD=$(jq -n --arg msg "$MESSAGE" '{content: $msg}')
 
 # --- Send to Discord ---
 curl -H "Content-Type: application/json" \
      -X POST \
-     -d "{\"content\": \"$MESSAGE\"}" \
+     -d "$JSON_PAYLOAD" \
      "$WEBHOOK_URL"
