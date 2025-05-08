@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# --- Configuration ---
+WEBHOOK_URL="https://discord.com/api/webhooks/1370172405250658425/WfxoVIybZwc4ZoFOL69wtaGnAa7YV3RKSpu5bHbbOr6cH-56ZStMgyQv7y2vhBttf2HA"
+PING_TARGET="1.1.1.1"
+
+# --- Uptime ---
+UPTIME=$(uptime -p)
+
+# --- Public IP ---
+PUBLIC_IP=$(curl -s ifconfig.me)
+
+# --- Ping Check ---
+ping -c 1 -W 2 "$PING_TARGET" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    PING_STATUS="✅ Reachable"
+else
+    PING_STATUS="❌ Unreachable"
+fi
+
+# --- Message Construction ---
+MESSAGE="**Placentia Heartbeat**\n
+🕒 Uptime: \`$UPTIME\`\n
+🌍 IP: \`$PUBLIC_IP\`\n
+📡 Ping to $PING_TARGET: $PING_STATUS"
+
+# --- Send to Discord ---
+curl -H "Content-Type: application/json" \
+     -X POST \
+     -d "{\"content\": \"$MESSAGE\"}" \
+     "$WEBHOOK_URL"
