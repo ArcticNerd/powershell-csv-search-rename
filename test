@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# === Config ===
+WEBHOOK_URL="https://discord.com/api/webhooks/1369882452616806490/APrHRLY_5LTu_8rl9Mx5pFSSxpuyftM3YBQSaQnXafgguvJxs-1N159jkflz8UAYFBCp"
+PING_TARGET="173.224.240.4"
+
+# === Gather Info ===
+UPTIME=$(uptime -p)
+GLOBAL_IP=$(curl -s ifconfig.me)
+PING_STATUS=$(ping -c 1 -W 2 $PING_TARGET &>/dev/null && echo "Reachable" || echo "Unreachable")
+
+# === Compose JSON Payload ===
+JSON_PAYLOAD=$(jq -n \
+  --arg uptime "$UPTIME" \
+  --arg ip "$GLOBAL_IP" \
+  --arg ping "$PING_STATUS" \
+  '{
+    username: "Avalon Monitor",
+    embeds: [{
+      title: "Avalon Status",
+      color: 5814783,
+      fields: [
+        { name: "Uptime", value: $uptime, inline: false },
+        { name: "Global IP", value: $ip, inline: false },
+        { name: "Ping to '$PING_TARGET'", value: $ping, inline: false }
+      ],
+      timestamp: (now | todate)
+    }]
+  }'
+)
+
+# === Send to Discord ===
+curl -s -H "Content-Type: application/json" -X POST -d "$JSON_PAYLOAD" "$WEBHOOK_URL"
